@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { cn } from "../../../lib/utils"
+import { isMacOS } from "../../../lib/utils/platform"
 
 /**
  * Hybrid traffic lights component for macOS desktop app
@@ -40,9 +41,9 @@ export function TrafficLights({
   // Native lights are shown by default (main process), and AgentsLayout controls visibility
   // This prevents the "flash of hidden lights" during loading state
 
-  // Only show in desktop app, hide in fullscreen (native traffic lights always show in fullscreen)
+  // Only show in desktop app on macOS, hide in fullscreen (native traffic lights always show in fullscreen)
   // isFullscreen === true means fullscreen, null or false means not fullscreen
-  if (!isDesktop || isFullscreen === true) return null
+  if (!isDesktop || !isMacOS() || isFullscreen === true) return null
 
   // When hovered, native lights are visible - render invisible placeholder to maintain layout
   if (isHovered) {
@@ -127,9 +128,9 @@ export function TrafficLightSpacer({
     prevFullscreenRef.current = isFullscreen
   }, [isFullscreen])
 
-  // Show spacer when desktop and not fullscreen
+  // Show spacer when desktop on macOS and not fullscreen
   // If isFullscreen is null (not initialized), assume not fullscreen
-  const shouldShow = isDesktop && isFullscreen !== true
+  const shouldShow = isDesktop && isMacOS() && isFullscreen !== true
 
   return (
     <div
